@@ -6,10 +6,23 @@ import {
   contactDefaultCategory,
 } from '../constants/contact.constants.js';
 import { emailRegexp } from '../constants/index.js';
+import { contactSortFields } from '../db/models/Contact.js';
 
 const objectIdValidator = (value, helpers) => {
   return isValidObjectId(value) ? value : helpers.message('Invalid id format');
 };
+
+export const getContactsSchema = {
+  [Segments.QUERY]: Joi.object({
+    page: Joi.number().integer().min(1).default(1),
+    perPage: Joi.number().integer().min(1).default(10),
+    sortOrder: Joi.string().valid("asc", "desc").default("asc"),
+    sortBy: Joi.string().valid(...contactSortFields).default("_id"),
+    category: Joi.string().valid(...contactCategoryList),
+    addAfter: Joi.string(),
+    search: Joi.string()
+  })
+}
 
 export const createContactSchema = {
   [Segments.BODY]: Joi.object({
